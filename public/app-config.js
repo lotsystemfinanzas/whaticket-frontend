@@ -1,2 +1,2 @@
-window.__APP_API_URL__='http://localhost:3001';
-window.__APP_WS_URL__='http://localhost:3001';
+window.__APP_API_URL__='https://whaticket-backend-production-1d64.up.railway.app';
+window.__APP_WS_URL__='https://whaticket-backend-production-1d64.up.railway.app';
