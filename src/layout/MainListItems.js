@@ -83,13 +83,36 @@ const MainListItems = (props) => {
         icon={
           <Badge badgeContent={connectionWarning ? "!" : 0} color="error">
             <SyncAltIcon />
-          </Badge>
+          
+      <ListItemLink
+        to="/connections?tab=instagram"
+        primary="Instagram"
+        icon={<span className="mdi mdi-instagram"></span>}
+      />
+      <ListItemLink
+        to="/connections?tab=messenger"
+        primary="Messenger"
+        icon={<span className="mdi mdi-facebook-messenger"></span>}
+      />
+</Badge>
         }
       />
       <ListItemLink
         to="/tickets"
         primary={i18n.t("mainDrawer.listItems.tickets")}
         icon={<WhatsAppIcon />}
+      />
+
+      {/* Atajos por canal */}
+      <ListItemLink
+        to="/tickets?channel=instagram"
+        primary="Tickets IG"
+        icon={<span className="mdi mdi-instagram" />}
+      />
+      <ListItemLink
+        to="/tickets?channel=messenger"
+        primary="Tickets MSN"
+        icon={<span className="mdi mdi-facebook-messenger" />}
       />
 
       <ListItemLink

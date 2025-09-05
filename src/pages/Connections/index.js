@@ -1,4 +1,5 @@
-import React, { useState, useCallback, useContext } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { format, parseISO } from "date-fns";
 
@@ -35,6 +36,9 @@ import TableRowSkeleton from "../../components/TableRowSkeleton";
 
 import api from "../../services/api";
 import WhatsAppModal from "../../components/WhatsAppModal";
+import InstagramModal from "../../components/InstagramModal";
+import MessengerModal from "../../components/MessengerModal";
+import useChannels from "../../hooks/useChannels";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import QrcodeModal from "../../components/QrcodeModal";
 import { i18n } from "../../translate/i18n";
@@ -97,6 +101,30 @@ const Connections = () => {
 
 	const { whatsApps, loading } = useContext(WhatsAppsContext);
 	const [whatsAppModalOpen, setWhatsAppModalOpen] = useState(false);
+	const location = useLocation();
+	const params = new URLSearchParams(location.search);
+	const tab = (params.get("tab") || "whatsapp").toLowerCase();
+
+	const handleConnectInstagram = async () => {
+		try {
+			const { data } = await api.post("/channels/instagram/connect", {
+				redirectUri: `${process.env.REACT_APP_BACKEND_URL}/meta/callback`
+			});
+			if (data && data.authUrl) window.location.href = data.authUrl;
+		} catch (err) { toastError(err); }
+	};
+
+	const handleConnectMessenger = async () => {
+		try {
+			const { data } = await api.post("/channels/messenger/connect", {
+				redirectUri: `${process.env.REACT_APP_BACKEND_URL}/meta/callback`
+			});
+			if (data && data.authUrl) window.location.href = data.authUrl;
+		} catch (err) { toastError(err); }
+	};
+
+	const [instagramModalOpen, setInstagramModalOpen] = useState(false);
+	const [messengerModalOpen, setMessengerModalOpen] = useState(false);
 	const [qrModalOpen, setQrModalOpen] = useState(false);
 	const [selectedWhatsApp, setSelectedWhatsApp] = useState(null);
 	const [confirmModalOpen, setConfirmModalOpen] = useState(false);
@@ -311,13 +339,25 @@ const Connections = () => {
 			/>
 			<MainHeader>
 				<Title>{i18n.t("connections.title")}</Title>
+				{/* Tabs de canal */}
+				<div style={{display:"flex", gap:8, marginLeft:8}}>
+					<Button variant={tab==="whatsapp"?"contained":"outlined"} onClick={()=>window.location.assign("/connections?tab=whatsapp")}>
+						WhatsApp
+					</Button>
+					<Button variant={tab==="instagram"?"contained":"outlined"} onClick={()=>window.location.assign("/connections?tab=instagram")}>
+						Instagram
+					</Button>
+					<Button variant={tab==="messenger"?"contained":"outlined"} onClick={()=>window.location.assign("/connections?tab=messenger")}>
+						Messenger
+					</Button>
+				</div>
 				<MainHeaderButtonsWrapper>
 					<Button
 						variant="contained"
 						color="primary"
-						onClick={handleOpenWhatsAppModal}
+						onClick={tab==="instagram" ? handleConnectInstagram : (tab==="messenger" ? handleConnectMessenger : handleOpenWhatsAppModal)}
 					>
-						{i18n.t("connections.buttons.add")}
+						{tab==="instagram" ? "AGREGAR INSTAGRAM" : (tab==="messenger" ? "AGREGAR MESSENGER" : i18n.t("connections.buttons.add"))}
 					</Button>
 				</MainHeaderButtonsWrapper>
 			</MainHeader>
@@ -393,7 +433,7 @@ const Connections = () => {
 						)}
 					</TableBody>
 				</Table>
-			</Paper>
+			</Paper>) }
 		</MainContainer>
 	);
 };
